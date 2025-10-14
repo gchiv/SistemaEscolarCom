@@ -1,6 +1,6 @@
 package org.example;
 
-import java.awt.EventQueue;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -53,7 +53,12 @@ public class Main {
             EventQueue.invokeLater(() -> {
                 JFrame frame = new JFrame("Escuela - Paneles");
                 frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                frame.setSize(1100, 700);
+
+                // Ocupar toda la pantalla
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                frame.setSize(screenSize.width, screenSize.height);
+                frame.setLocation(0, 0);
+
                 frame.setLocationRelativeTo(null);
 
                 JTabbedPane tabs = new JTabbedPane();
@@ -64,6 +69,7 @@ public class Main {
                 tabs.addTab("Asistencias",   new AsistenciasPanel(fConn));
 
                 frame.setContentPane(tabs);
+
                 frame.setVisible(true);
 
                 // Agrega un hook para cerrar bien recursos al salir
