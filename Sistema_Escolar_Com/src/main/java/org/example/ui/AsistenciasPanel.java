@@ -12,14 +12,7 @@ public class AsistenciasPanel extends JPanel {
 
     // Opción B (JOIN legible):
     private static final String SQL = """
-            SELECT a.id AS asistencia_id,
-                   p.id AS persona_id, p.nombre AS persona_nombre, p.apellido AS persona_apellido,
-                   m.id AS materia_id, m.nombre AS materia_nombre,
-                   a.fecha, a.presente
-            FROM asistencias a
-            JOIN personas_escuela p ON p.id = a.persona_id
-            JOIN materias m         ON m.id = a.materia_id
-            ORDER BY a.fecha DESC
+            SELECT * FROM asistencias;
             """;
 
     private final Connection conn;

@@ -12,14 +12,7 @@ public class InscripcionesPanel extends JPanel {
 
     // Opción B: vista combinada (ajusta nombres de columnas/llaves)
     private static final String SQL = """
-            SELECT i.id AS inscripcion_id,
-                   p.id AS persona_id, p.nombre AS persona_nombre, p.apellido AS persona_apellido,
-                   m.id AS materia_id, m.nombre AS materia_nombre,
-                   i.fecha AS fecha_inscripcion
-            FROM inscripciones i
-            JOIN personas_escuela p ON p.id = i.persona_id
-            JOIN materias m         ON m.id = i.materia_id
-            ORDER BY i.fecha DESC
+            SELECT * FROM inscripciones
             """;
 
     private final Connection conn;
