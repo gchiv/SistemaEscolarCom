@@ -82,7 +82,7 @@ public class PersonasPanel extends JPanel {
                 }
                 ps.setInt(2, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(PersonasPanel.this, "✅ Valor actualizado");
+                AdvancedUI.showToast(PersonasPanel.this, "Valor actualizado");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(PersonasPanel.this,
                         "Error al guardar cambio:\n" + ex.getMessage(),
@@ -141,11 +141,12 @@ public class PersonasPanel extends JPanel {
     // ==========================================================
     private void loadDataFiltered(String filtro) {
         String sql = """
-                SELECT * FROM personas_escuela
-                WHERE nombre LIKE ? OR apellido LIKE ? OR rol LIKE ?
+                SELECT * FROM personas_escuela as p 
+                JOIN roles as r on r.id_rol = p.id_rol 
+                WHERE p.nombre LIKE ? OR p.apellido LIKE ? OR r.id_rol LIKE ? OR r.descripcion LIKE ?
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (int i = 1; i <= 3; i++) ps.setString(i, "%" + filtro + "%");
+            for (int i = 0; i <= 3; i++) ps.setString(i, "%" + filtro + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 table.setModel(buildEditableModel(rs));
                 autosizeColumns();
@@ -176,7 +177,7 @@ public class PersonasPanel extends JPanel {
                     "DELETE FROM personas_escuela WHERE id_persona = ?")) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "🗑 Registro eliminado");
+                AdvancedUI.showToast(this, "Registro eliminado");
                 loadData();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error SQL: " + ex.getMessage());
@@ -192,12 +193,17 @@ public class PersonasPanel extends JPanel {
         JTextField apellido = new JTextField();
         JComboBox<String> sexo = new JComboBox<>(new String[]{"M", "F"});
         JTextField fecha = new JTextField(LocalDate.now().toString());
-        JTextField rol = new JTextField();
+        // ComboBox para el rol
+        JComboBox<String> rol = new JComboBox<>(new String[]{
+                "1 - Alumno",
+                "2 - Profesor",
+                "3 - Administrativo",
+                "4 - Otro"
+        });
 
         nombre.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Ej. Ana");
         apellido.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Ej. López");
         fecha.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "YYYY-MM-DD");
-        rol.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Alumno / Docente");
 
         JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
@@ -211,7 +217,7 @@ public class PersonasPanel extends JPanel {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(save); buttons.add(cancel);
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "➕ Nueva Persona", true);
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Nueva Persona", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(form, BorderLayout.CENTER);
         dialog.add(buttons, BorderLayout.SOUTH);
@@ -221,14 +227,16 @@ public class PersonasPanel extends JPanel {
         cancel.addActionListener(e -> dialog.dispose());
         save.addActionListener(e -> {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO personas_escuela (nombre, apellido, sexo, fecha_nacimiento, rol) VALUES (?, ?, ?, ?, ?)")) {
+                    "INSERT INTO personas_escuela (nombre, apellido, sexo, fh_nac, id_rol) VALUES (?, ?, ?, ?, ?)")) {
                 ps.setString(1, nombre.getText());
                 ps.setString(2, apellido.getText());
                 ps.setString(3, sexo.getSelectedItem().toString());
                 ps.setDate(4, Date.valueOf(fecha.getText()));
-                ps.setString(5, rol.getText());
+                int idRol = Integer.parseInt(rol.getSelectedItem().toString().split(" - ")[0]);
+                ps.setInt(5, idRol);
+
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "✅ Persona insertada");
+                AdvancedUI.showToast(this, "Persona insertada");
                 loadData();
                 dialog.dispose();
             } catch (Exception ex) {
@@ -238,4 +246,5 @@ public class PersonasPanel extends JPanel {
 
         dialog.setVisible(true);
     }
+
 }

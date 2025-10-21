@@ -81,7 +81,7 @@ public class InscripcionesPanel extends JPanel {
                 }
                 ps.setInt(2, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(InscripcionesPanel.this, "✅ Valor actualizado");
+                AdvancedUI.showToast(InscripcionesPanel.this, "Valor actualizado");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(InscripcionesPanel.this,
                         "Error al guardar cambio:\n" + ex.getMessage(),
@@ -140,7 +140,7 @@ public class InscripcionesPanel extends JPanel {
     private void loadDataFiltered(String filtro) {
         String sql = """
                 SELECT * FROM inscripciones
-                WHERE CAST(id_persona AS CHAR) LIKE ? OR CAST(id_materia AS CHAR) LIKE ?
+                WHERE CAST(id_estudiante AS CHAR) LIKE ? OR CAST(id_materia AS CHAR) LIKE ?
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + filtro + "%");
@@ -173,7 +173,7 @@ public class InscripcionesPanel extends JPanel {
                     "DELETE FROM inscripciones WHERE id_inscripcion = ?")) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "🗑 Registro eliminado");
+                AdvancedUI.showToast(this, "Registro eliminado");
                 loadData();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error SQL: " + ex.getMessage());
@@ -197,7 +197,7 @@ public class InscripcionesPanel extends JPanel {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(save); buttons.add(cancel);
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "➕ Nueva Inscripción", true);
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Nueva Inscripción", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(form, BorderLayout.CENTER);
         dialog.add(buttons, BorderLayout.SOUTH);
@@ -207,11 +207,11 @@ public class InscripcionesPanel extends JPanel {
         cancel.addActionListener(e -> dialog.dispose());
         save.addActionListener(e -> {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO inscripciones (id_persona, id_materia) VALUES (?, ?)")) {
+                    "INSERT INTO inscripciones (id_estudiante, id_materia) VALUES (?, ?)")) {
                 ps.setInt(1, Integer.parseInt(idPersona.getText()));
                 ps.setInt(2, Integer.parseInt(idMateria.getText()));
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "✅ Inscripción agregada");
+                AdvancedUI.showToast(this, "Inscripción agregada");
                 loadData();
                 dialog.dispose();
             } catch (Exception ex) {

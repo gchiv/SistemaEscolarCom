@@ -76,7 +76,7 @@ public class MateriasPanel extends JPanel {
                 ps.setObject(1, newValue);
                 ps.setInt(2, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(MateriasPanel.this, "✅ Valor actualizado");
+                AdvancedUI.showToast(MateriasPanel.this, "Valor actualizado");
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(MateriasPanel.this,
                         "Error al guardar cambio:\n" + ex.getMessage(),
@@ -128,10 +128,10 @@ public class MateriasPanel extends JPanel {
     // BUSCAR
     // ===========================================================
     private void loadDataFiltered(String filtro) {
-        String sql = "SELECT * FROM materias WHERE nombre LIKE ? OR descripcion LIKE ?";
+        String sql = "SELECT * FROM materias WHERE descripcion LIKE ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + filtro + "%");
-            ps.setString(2, "%" + filtro + "%");
+
             try (ResultSet rs = ps.executeQuery()) {
                 table.setModel(buildEditableModel(rs));
                 lblTotal.setText("Total registros: " + table.getRowCount());
@@ -158,7 +158,7 @@ public class MateriasPanel extends JPanel {
             try (PreparedStatement ps = conn.prepareStatement("DELETE FROM materias WHERE id_materia = ?")) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "🗑 Registro eliminado");
+                AdvancedUI.showToast(this, "Registro eliminado");
                 loadData();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error SQL: " + ex.getMessage());
@@ -170,22 +170,41 @@ public class MateriasPanel extends JPanel {
     // NUEVO REGISTRO
     // ===========================================================
     private void showInsertDialog() {
-        JTextField nombre = new JTextField();
+        JComboBox<String> semestre = new JComboBox<>(new String[]{
+                "1 - primero",
+                "2 - segundo",
+                "3 - tercero",
+                "4 - cuarto",
+                "5 - quinto",
+                "6 - sexto",
+                "7 - septimo",
+                "8 - octavo"
+        });
+
         JTextField descripcion = new JTextField();
+
+        JComboBox<String> creditos = new JComboBox<>(new String[]{
+                "1 - credito",
+                "2 - creditos",
+                "3 - creditos",
+                "4 - creditos"
+        });
 
         JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+        form.add(new JLabel("Semestre:"));
+        form.add(semestre);
         form.add(new JLabel("Nombre:"));
-        form.add(nombre);
-        form.add(new JLabel("Descripción:"));
         form.add(descripcion);
+        form.add(new JLabel("Creditos:"));
+        form.add(creditos);
 
         JButton save = new JButton("Guardar"), cancel = new JButton("Cancelar");
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(save);
         buttons.add(cancel);
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "➕ Nueva Materia", true);
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Nueva Materia", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(form, BorderLayout.CENTER);
         dialog.add(buttons, BorderLayout.SOUTH);
@@ -195,11 +214,16 @@ public class MateriasPanel extends JPanel {
         cancel.addActionListener(e -> dialog.dispose());
         save.addActionListener(e -> {
             try (PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO materias (nombre, descripcion) VALUES (?, ?)")) {
-                ps.setString(1, nombre.getText());
+                    "INSERT INTO materias (semestre, descripcion, creditos) VALUES (?, ?, ?)")) {
+
+                int semestreNum = Integer.parseInt(semestre.getSelectedItem().toString().split(" - ")[0]);
+                int creditoNum = Integer.parseInt(creditos.getSelectedItem().toString().split(" - ")[0]);
+
+                ps.setString(1, String.valueOf(semestreNum));
                 ps.setString(2, descripcion.getText());
+                ps.setString(3, String.valueOf(creditoNum));
                 ps.executeUpdate();
-                AdvancedUI.showToast(this, "✅ Materia insertada");
+                AdvancedUI.showToast(this, "Materia insertada");
                 loadData();
                 dialog.dispose();
             } catch (Exception ex) {

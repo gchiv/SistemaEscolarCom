@@ -95,7 +95,7 @@ public class AsistenciasPanel extends JPanel {
                 }
                 ps.setInt(2, id);
                 ps.executeUpdate();
-                AdvancedUI.showToast(AsistenciasPanel.this, "✅ Valor actualizado");
+                AdvancedUI.showToast(AsistenciasPanel.this, "Valor actualizado");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(AsistenciasPanel.this,
                         "Error al guardar cambio:\n" + ex.getMessage(),
@@ -198,7 +198,7 @@ public class AsistenciasPanel extends JPanel {
                 ps.setInt(1, id);
                 ps.executeUpdate();
                 loadData();
-                AdvancedUI.showToast(this, "🗑 Registro eliminado");
+                AdvancedUI.showToast(this, "Registro eliminado");
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error SQL: " + ex.getMessage());
             }
@@ -221,7 +221,7 @@ public class AsistenciasPanel extends JPanel {
                 }
                 AdvancedUI.showToast(this, "Exportado con éxito");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error exportando: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error al exportar: " + ex.getMessage());
             }
         }
     }
@@ -251,7 +251,7 @@ public class AsistenciasPanel extends JPanel {
         buttons.add(btnSave);
         buttons.add(btnCancel);
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "➕ Nueva Asistencia", true);
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Nueva Asistencia", true);
         dialog.setLayout(new BorderLayout());
         dialog.add(formPanel, BorderLayout.CENTER);
         dialog.add(buttons, BorderLayout.SOUTH);
@@ -274,7 +274,7 @@ public class AsistenciasPanel extends JPanel {
                     ps.setInt(1, idInscripcion);
                     ps.setDate(2, Date.valueOf(fecha));
                     ps.executeUpdate();
-                    AdvancedUI.showToast(this, "✅ Registro insertado");
+                    AdvancedUI.showToast(this, "Registro insertado");
                     loadData();
                     dialog.dispose();
                 }
